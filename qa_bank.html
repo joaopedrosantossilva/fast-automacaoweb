@@ -271,36 +271,29 @@
         const LOCAL_STORAGE_USERS = 'bancoTesteUsers';
         const LOCAL_STORAGE_BALANCE = 'bancoTesteBalance';
 
-        // --- NOVO: "Seed" (Semeadura) do Usuário Admin ---
+        // --- "Seed" (Semeadura) do Usuário Admin ---
         (function seedAdminUser() {
             const adminEmail = 'admin@qabank.com';
-            // Pega o "banco de dados" de usuários ou cria um vazio
             const users = JSON.parse(localStorage.getItem(LOCAL_STORAGE_USERS) || '{}');
             
-            // Só executa se o admin AINDA NÃO existir
             if (!users[adminEmail]) {
                 const adminUser = {
                     password: "admin",
                     name: "Admin do Sistema",
                     sexo: "OUTRO",
-                    accountNumber: "000001", // Conta fixa para o admin
+                    accountNumber: "000001",
                     createdAt: new Date()
                 };
-                
-                // Adiciona o admin ao objeto de usuários
                 users[adminEmail] = adminUser;
                 localStorage.setItem(LOCAL_STORAGE_USERS, JSON.stringify(users));
                 
-                // Adiciona o saldo inicial "infinito" do admin
                 const balances = JSON.parse(localStorage.getItem(LOCAL_STORAGE_BALANCE) || '{}');
-                balances[adminUser.accountNumber] = 999999.00; // Saldo inicial
+                balances[adminUser.accountNumber] = 999999.00;
                 localStorage.setItem(LOCAL_STORAGE_BALANCE, JSON.stringify(balances));
                 
-                // Log para o professor/aluno ver (só aparece 1 vez, ao abrir o console)
                 console.log('*** USUÁRIO ADMIN [admin@qabank.com / admin] CRIADO COM SUCESSO ***');
             }
         })();
-        // --- FIM DO "Seed" ---
 
 
         // --- Funções de Gerenciamento do LocalStorage (Encapsuladas) ---
@@ -650,24 +643,26 @@
         
         // --- Inicialização da Aplicação ---
         
+        // --- INÍCIO DA CORREÇÃO ---
         function initValidationListeners() {
             
-            // Listeners do Login
-            document.getElementById('email-input').addEventListener('input', validateLoginFields);
-            document.getElementById('password-input').addEventListener('input', validateLoginFields);
+            // Listeners do Login (agora chamando a função no "window")
+            document.getElementById('email-input').addEventListener('input', window.validateLoginFields);
+            document.getElementById('password-input').addEventListener('input', window.validateLoginFields);
             
             // Listeners do Cadastro (Habilita botão)
-            document.getElementById('register-name-input').addEventListener('input', checkRegisterButtonState);
-            document.getElementById('register-email-input').addEventListener('input', checkRegisterButtonState);
-            document.getElementById('register-password-input').addEventListener('input', checkRegisterButtonState);
-            document.getElementById('register-sexo-select').addEventListener('change', checkRegisterButtonState);
+            document.getElementById('register-name-input').addEventListener('input', window.checkRegisterButtonState);
+            document.getElementById('register-email-input').addEventListener('input', window.checkRegisterButtonState);
+            document.getElementById('register-password-input').addEventListener('input', window.checkRegisterButtonState);
+            document.getElementById('register-sexo-select').addEventListener('change', window.checkRegisterButtonState);
             
             // Listeners do Cadastro (Blur)
-            document.getElementById('register-name-input').addEventListener('blur', validateNameOnBlur);
-            document.getElementById('register-email-input').addEventListener('blur', validateEmailOnBlur);
-            document.getElementById('register-password-input').addEventListener('blur', validatePasswordOnBlur);
-            document.getElementById('register-sexo-select').addEventListener('blur', validateSexoOnBlur);
+            document.getElementById('register-name-input').addEventListener('blur', window.validateNameOnBlur);
+            document.getElementById('register-email-input').addEventListener('blur', window.validateEmailOnBlur);
+            document.getElementById('register-password-input').addEventListener('blur', window.validatePasswordOnBlur);
+            document.getElementById('register-sexo-select').addEventListener('blur', window.validateSexoOnBlur);
         }
+        // --- FIM DA CORREÇÃO ---
 
         window.onload = () => {
             initValidationListeners();
