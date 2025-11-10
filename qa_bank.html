@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>QA Bank v4 (Admin-Ready)</title>
+    
+    <style>
+        :root {
+            --primary-color: #004d99; --secondary-color: #007bff; --success-color: #28a745; 
+            --danger-color: #dc3545; --text-dark: #343a3f; --background-light: #f4f7f9;
+            --card-background: #ffffff; --border-radius: 8px; --box-shadow-soft: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-light); padding: 30px; display: flex;
+            justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0;
+        }
+        /* --- Layout de Autenticação --- */
+        .auth-container { width: 100%; max-width: 400px; }
+        
+        /* --- Layout da App Logada (Web App) --- */
+        .app-container {
+            width: 100%;
+            max-width: 900px; /* Largura de "Web App" */
+            display: flex;
+            gap: 30px;
+        }
+        .app-sidebar {
+            width: 220px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow-soft);
+            padding: 20px;
+            height: fit-content;
+        }
+        .app-main-content {
+            flex: 1; /* Ocupa o espaço restante */
+        }
+        /* --- Fim do Layout da App --- */
+
+        .card {
+            background-color: var(--card-background); padding: 30px; border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow-soft); margin-bottom: 25px;
+        }
+        h1 {
+            color: var(--primary-color); text-align: center; margin-bottom: 30px;
+            font-size: 2rem; width: 100%; max-width: 900px;
+        }
+        h2 {
+            color: var(--text-dark); font-size: 1.5rem; margin-bottom: 20px;
+            padding-bottom: 10px; border-bottom: 1px solid #e9ecef; font-weight: 600;
+        }
+        h3 {
+             color: var(--text-dark); font-size: 1.2rem; margin-top: 15px; margin-bottom: 10px;
+        }
+        
+        /* --- Navegação da Sidebar --- */
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background-color 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #f1f1f1;
+        }
+        .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        .sidebar-footer {
+            border-top: 1px solid #e9ecef;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        /* --- Fim da Navegação --- */
+
+        .form-group { margin-bottom: 15px; }
+        label {
+            display: block; margin-bottom: 5px; font-weight: 500;
+            color: var(--text-dark); font-size: 0.95rem;
+        }
+        input[type="email"], input[type="password"], input[type="text"], input[type="number"], select {
+            width: 100%; padding: 12px; border: 1px solid #ced4da;
+            border-radius: var(--border-radius); box-sizing: border-box; font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); outline: none;
+        }
+        input.invalid, select.invalid {
+            border-color: var(--danger-color);
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+        .form-input-valor { border-left: 4px solid var(--danger-color); }
+        .btn {
+            padding: 12px 20px; border: none; border-radius: var(--border-radius);
+            cursor: pointer; font-size: 1rem; font-weight: bold;
+            transition: background-color 0.3s, opacity 0.3s; margin-right: 10px;
+        }
+        .btn:disabled { background-color: #ced4da; cursor: not-allowed; opacity: 0.7; }
+        .btn-primary { background-color: var(--secondary-color); color: white; }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-danger { background-color: var(--danger-color); color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn:hover:not(:disabled) { opacity: 0.9; }
+        .btn-block { width: 100%; margin-right: 0; margin-bottom: 10px; }
+        .message {
+            padding: 12px; margin-top: 15px; border-radius: var(--border-radius);
+            font-weight: 600; font-size: 0.9rem;
+        }
+        .inline-error {
+            color: var(--danger-color); font-size: 0.8rem; font-weight: 500;
+            margin-top: 3px; height: 1.2em;
+        }
+        .error { background-color: #f8d7da; color: var(--danger-color); border: 1px solid var(--danger-color); }
+        .success { background-color: #d4edda; color: var(--success-color); border: 1px solid var(--success-color); }
+        .balance-box {
+            background-color: var(--primary-color); color: white; padding: 20px;
+            border-radius: var(--border-radius); margin-bottom: 25px; font-size: 1.1em;
+        }
+        .balance-box strong { display: block; font-size: 1.6rem; margin-top: 5px; }
+        .balance-box small { opacity: 0.8; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    
+    <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <h1>QA Bank</h1>
+        
+        <div id="auth-container" class="auth-container">
+            <div id="login-card" data-cy="login-card">
+                 <div class="card">
+                    <h2>Acesso à Conta</h2>
+                    <div class="form-group">
+                        <label for="email-input">Email:</label>
+                        <input type="email" id="email-input" data-cy="input-login-email" placeholder="seu.email@qa.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="password-input">Senha:</label>
+                        <input type="password" id="password-input" data-cy="input-login-password" placeholder="********">
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="login()" data-cy="btn-login" id="btn-login" disabled>Entrar</button>
+                    <button class="btn btn-success btn-block" onclick="showRegister(true)" data-cy="btn-toggle-register">Quero Criar uma Conta</button>
+                    <p id="login-message" class="message" role="alert" style="display: none;"></p>
+                </div>
+            </div>
+            <div id="register-card" data-cy="register-card" style="display: none;">
+                 <div class="card">
+                    <h2>Criar Nova Conta</h2>
+                    <div class="form-group">
+                        <label for="register-name-input">Nome Completo:</label>
+                        <input type="text" id="register-name-input" data-cy="input-register-name" placeholder="Seu nome">
+                        <small id="name-error-msg" class="inline-error"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email-input">Email:</label>
+                        <input type="email" id="register-email-input" data-cy="input-register-email" placeholder="email@unico.com">
+                        <small id="email-error-msg" class="inline-error"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password-input">Senha:</label>
+                        <input type="password" id="register-password-input" data-cy="input-register-password" placeholder="Mínimo 6 caracteres">
+                        <small id="password-error-msg" class="inline-error"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-sexo-select">Sexo:</label>
+                        <select id="register-sexo-select" data-cy="select-register-sexo">
+                            <option value="">Selecione</option>
+                            <option value="MASCULINO">Masculino</option>
+                            <option value="FEMININO">Feminino</option>
+                            <option value="OUTRO">Outro / Prefiro não dizer</option>
+                        </select>
+                        <small id="sexo-error-msg" class="inline-error"></small>
+                    </div>
+                    <button class="btn btn-success btn-block" onclick="register()" data-cy="btn-register-submit" id="btn-register-submit" disabled>Salvar Cadastro</button>
+                    <button class="btn btn-block" onclick="showRegister(false)" data-cy="btn-toggle-login">Voltar para Login</button>
+                    <p id="register-message" class="message" role="alert" style="display: none;"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="app" class="app-container" data-cy="painel-operacoes" style="display: none;">
+            
+            <div class="app-sidebar">
+                <nav>
+                    <a href="#" id="nav-home" class="nav-link" onclick="showView('home-view')" data-cy="nav-home">🏠 Home</a>
+                    <a href="#" id="nav-deposito" class="nav-link" onclick="showView('deposito-view')" data-cy="nav-deposito">💰 Depósito</a>
+                    <a href="#" id="nav-saque" class="nav-link" onclick="showView('saque-view')" data-cy="nav-saque">💸 Saque</a>
+                    <a href="#" id="nav-transfer" class="nav-link" onclick="showView('transfer-view')" data-cy="nav-transferencia">🔄 Transferência</a>
+                </nav>
+                <div class="sidebar-footer">
+                    <button class="btn btn-block" data-cy="btn-logout" onclick="logout()">Sair</button>
+                </div>
+            </div>
+
+            <div class="app-main-content">
+                
+                <div class="balance-box">
+                    Olá, <span id="user-name-display" data-cy="user-name-display"></span>
+                    <small>Conta: <span id="account-number-display" data-cy="account-number-display"></span></small>
+                    <p>Saldo em Conta:</p>
+                    <strong data-cy="saldo-atual">R$ <span id="account-balance">0,00</span></strong>
+                </div>
+
+                <div id="home-view" class="view-container" data-cy="home-view" style="display: none;">
+                    <div class="card">
+                        <h2>Bem-vindo ao seu Painel</h2>
+                        <p>Selecione uma das operações ao lado para começar.</p>
+                    </div>
+                </div>
+                
+                <div id="saque-view" class="view-container" data-cy="saque-view" style="display: none;">
+                    <div class="card">
+                        <h2>Saque Imediato</h2>
+                        <div class="form-group">
+                            <label for="saque-valor-input">Valor:</label>
+                            <input type="number" id="saque-valor-input" class="form-input-valor" placeholder="R$ Ex: 500.00">
+                        </div>
+                        <button class="btn btn-danger btn-block" data-cy="btn-sacar" onclick="saque()">
+                            Realizar Saque
+                        </button>
+                        <p id="saque-message" class="message" role="alert" style="display: none;"></p>
+                    </div>
+                </div>
+                
+                <div id="transfer-view" class="view-container" data-cy="transfer-view" style="display: none;">
+                    <div class="card">
+                        <h2>Transferência entre Contas</h2>
+                        <div class="form-group">
+                            <label for="transfer-destino-input">Número da Conta de Destino:</label>
+                            <input type="number" id="transfer-destino-input" data-cy="input-transfer-destino" placeholder="Ex: 987654">
+                        </div>
+                        <div class="form-group">
+                            <label for="transfer-valor-input">Valor a Transferir:</label>
+                            <input type="number" id="transfer-valor-input" class="form-input-valor" placeholder="R$ Ex: 100.00">
+                        </div>
+                        <button class="btn btn-primary btn-block" data-cy="btn-transferir" onclick="transfer()">
+                            Transferir
+                        </button>
+                        <p id="transfer-message" class="message" role="alert" style="display: none;"></p>
+                    </div>
+                </div>
+
+                <div id="deposito-view" class="view-container" data-cy="deposito-view" style="display: none;">
+                    <div class="card">
+                        <h2>Depósito em Conta</h2>
+                        <div class="form-group">
+                            <label for="deposito-valor-input">Valor:</label>
+                            <input type="number" id="deposito-valor-input" class="form-input-valor" placeholder="R$ Ex: 100.00" style="border-left-color: var(--success-color);">
+                        </div>
+                        <button class="btn btn-success btn-block" data-cy="btn-depositar" onclick="deposito()">
+                            Realizar Depósito
+                        </button>
+                        <p id="deposito-message" class="message" role="alert" style="display: none;"></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Constantes de LocalStorage ---
+        const LOCAL_STORAGE_USERS = 'bancoTesteUsers';
+        const LOCAL_STORAGE_BALANCE = 'bancoTesteBalance';
+
+        // --- NOVO: "Seed" (Semeadura) do Usuário Admin ---
+        (function seedAdminUser() {
+            const adminEmail = 'admin@qabank.com';
+            // Pega o "banco de dados" de usuários ou cria um vazio
+            const users = JSON.parse(localStorage.getItem(LOCAL_STORAGE_USERS) || '{}');
+            
+            // Só executa se o admin AINDA NÃO existir
+            if (!users[adminEmail]) {
+                const adminUser = {
+                    password: "admin",
+                    name: "Admin do Sistema",
+                    sexo: "OUTRO",
+                    accountNumber: "000001", // Conta fixa para o admin
+                    createdAt: new Date()
+                };
+                
+                // Adiciona o admin ao objeto de usuários
+                users[adminEmail] = adminUser;
+                localStorage.setItem(LOCAL_STORAGE_USERS, JSON.stringify(users));
+                
+                // Adiciona o saldo inicial "infinito" do admin
+                const balances = JSON.parse(localStorage.getItem(LOCAL_STORAGE_BALANCE) || '{}');
+                balances[adminUser.accountNumber] = 999999.00; // Saldo inicial
+                localStorage.setItem(LOCAL_STORAGE_BALANCE, JSON.stringify(balances));
+                
+                // Log para o professor/aluno ver (só aparece 1 vez, ao abrir o console)
+                console.log('*** USUÁRIO ADMIN [admin@qabank.com / admin] CRIADO COM SUCESSO ***');
+            }
+        })();
+        // --- FIM DO "Seed" ---
+
+
+        // --- Funções de Gerenciamento do LocalStorage (Encapsuladas) ---
+        (function() { 
+            function getUsers() {
+                const users = localStorage.getItem(LOCAL_STORAGE_USERS);
+                return users ? JSON.parse(users) : {};
+            }
+            function saveUsers(users) {
+                localStorage.setItem(LOCAL_STORAGE_USERS, JSON.stringify(users));
+            }
+            function getAllBalances() {
+                 const balances = localStorage.getItem(LOCAL_STORAGE_BALANCE);
+                return balances ? JSON.parse(balances) : {};
+            }
+            function getBalance(accountNumber) {
+                const data = getAllBalances();
+                return data[accountNumber] !== undefined ? data[accountNumber] : 0.00;
+            }
+            function setBalance(accountNumber, newBalance) {
+                const data = getAllBalances();
+                data[accountNumber] = parseFloat(newBalance.toFixed(2));
+                localStorage.setItem(LOCAL_STORAGE_BALANCE, JSON.stringify(data));
+            }
+            // Disponibiliza as funções globalmente para o app
+            window.getUsers = getUsers;
+            window.saveUsers = saveUsers;
+            window.getAllBalances = getAllBalances;
+            window.getBalance = getBalance;
+            window.setBalance = setBalance;
+            window.generateAccountNumber = () => Math.floor(100000 + Math.random() * 900000).toString();
+        })();
+
+
+        // --- Funções de Validação de Formulário (Encapsuladas) ---
+        (function() {
+            function validateLoginFields() {
+                const email = document.getElementById('email-input').value;
+                const password = document.getElementById('password-input').value;
+                const loginButton = document.getElementById('btn-login');
+                loginButton.disabled = !(email.trim().length > 0 && password.trim().length > 0);
+            }
+            function checkRegisterButtonState() {
+                const name = document.getElementById('register-name-input').value;
+                const email = document.getElementById('register-email-input').value;
+                const password = document.getElementById('register-password-input').value;
+                const sexo = document.getElementById('register-sexo-select').value;
+                const registerButton = document.getElementById('btn-register-submit');
+                registerButton.disabled = !(name.trim().length > 0 && email.trim().length > 0 && password.trim().length > 0 && sexo !== "");
+            }
+            function validateField(field, errorEl, check) {
+                const isValid = check(field.value);
+                if (field.value.trim().length > 0 && !isValid) {
+                    errorEl.textContent = field.dataset.errorMessage || 'Campo inválido.';
+                    field.classList.add('invalid');
+                } else {
+                    errorEl.textContent = '';
+                    field.classList.remove('invalid');
+                }
+                return isValid || field.value.trim().length === 0;
+            }
+            
+            // Disponibiliza as funções globalmente
+            window.validateLoginFields = validateLoginFields;
+            window.checkRegisterButtonState = checkRegisterButtonState;
+            window.validateNameOnBlur = () => validateField(
+                document.getElementById('register-name-input'),
+                document.getElementById('name-error-msg'),
+                (value) => value.trim().length > 0
+            );
+            window.validateEmailOnBlur = () => {
+                document.getElementById('register-email-input').dataset.errorMessage = "Formato de email inválido.";
+                return validateField(
+                    document.getElementById('register-email-input'),
+                    document.getElementById('email-error-msg'),
+                    (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+                );
+            };
+            window.validatePasswordOnBlur = () => {
+                document.getElementById('register-password-input').dataset.errorMessage = "A senha deve ter no mínimo 6 caracteres.";
+                return validateField(
+                    document.getElementById('register-password-input'),
+                    document.getElementById('password-error-msg'),
+                    (value) => value.trim().length >= 6
+                );
+            };
+            window.validateSexoOnBlur = () => {
+                document.getElementById('register-sexo-select').dataset.errorMessage = "Por favor, selecione o sexo.";
+                return validateField(
+                    document.getElementById('register-sexo-select'),
+                    document.getElementById('sexo-error-msg'),
+                    (value) => value !== ""
+                );
+            };
+        })();
+
+
+        // --- Funções de Estado da Interface (UI) ---
+        
+        function showView(viewId) {
+            document.querySelectorAll('.view-container').forEach(view => {
+                view.style.display = 'none';
+            });
+            
+            document.querySelectorAll('.message').forEach(msg => {
+                msg.style.display = 'none';
+                msg.textContent = '';
+            });
+
+            const view = document.getElementById(viewId);
+            if (view) {
+                view.style.display = 'block';
+            }
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            const activeLink = document.getElementById(`nav-${viewId.split('-')[0]}`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+        }
+
+        function showRegister(show) {
+            const loginCard = document.getElementById('login-card');
+            const registerCard = document.getElementById('register-card');
+            
+            if (show) {
+                loginCard.style.display = 'none';
+                registerCard.style.display = 'block';
+                document.getElementById('register-message').style.display = 'none';
+                
+                const fields = ['register-name-input', 'register-email-input', 'register-password-input'];
+                fields.forEach(id => {
+                    document.getElementById(id).value = '';
+                    document.getElementById(id).classList.remove('invalid');
+                });
+                document.getElementById('register-sexo-select').value = '';
+                document.getElementById('register-sexo-select').classList.remove('invalid');
+                
+                const errors = ['name-error-msg', 'email-error-msg', 'password-error-msg', 'sexo-error-msg'];
+                errors.forEach(id => document.getElementById(id).textContent = '');
+                
+                checkRegisterButtonState();
+
+            } else {
+                loginCard.style.display = 'block';
+                registerCard.style.display = 'none';
+                document.getElementById('login-message').style.display = 'none';
+                
+                document.getElementById('email-input').value = '';
+                document.getElementById('password-input').value = '';
+                
+                validateLoginFields();
+            }
+        }
+
+        function updateUI() {
+            const token = localStorage.getItem('authToken');
+            const userAccount = localStorage.getItem('authUserAccountNumber');
+            
+            const authContainer = document.getElementById('auth-container');
+            const appSection = document.getElementById('app');
+            
+            const balanceSpan = document.getElementById('account-balance');
+            const nameSpan = document.getElementById('user-name-display');
+            const accountSpan = document.getElementById('account-number-display');
+
+            if (token && userAccount) {
+                authContainer.style.display = 'none';
+                appSection.style.display = 'flex';
+                
+                const users = getUsers();
+                const currentUser = Object.values(users).find(user => user.accountNumber === userAccount);
+                
+                if (currentUser) {
+                    nameSpan.textContent = currentUser.name;
+                    accountSpan.textContent = userAccount;
+                    balanceSpan.textContent = getBalance(userAccount).toLocaleString('pt-BR', { minimumFractionDigits: 2 }); 
+                } else {
+                    logout();
+                    return;
+                }
+                
+                document.getElementById('saque-valor-input').value = '';
+                document.getElementById('transfer-destino-input').value = '';
+                document.getElementById('transfer-valor-input').value = '';
+                document.getElementById('deposito-valor-input').value = '';
+
+                showView('home-view');
+
+            } else {
+                authContainer.style.display = 'block';
+                appSection.style.display = 'none';
+                
+                document.getElementById('email-input').value = '';
+                document.getElementById('password-input').value = '';
+
+                showRegister(false); 
+            }
+        }
+
+        // --- Ações da Aplicação (Event Handlers) ---
+        (function() { // Funções encapsuladas
+            function register() {
+                const msgEl = document.getElementById('register-message');
+                msgEl.style.display = 'none';
+                if (!validateNameOnBlur() || !validateEmailOnBlur() || !validatePasswordOnBlur() || !validateSexoOnBlur()) return;
+                
+                const name = document.getElementById('register-name-input').value;
+                const email = document.getElementById('register-email-input').value;
+                const password = document.getElementById('register-password-input').value;
+                const sexo = document.getElementById('register-sexo-select').value;
+                msgEl.className = 'message error';
+
+                const users = getUsers();
+                if (users[email]) {
+                    msgEl.style.display = 'block';
+                    msgEl.textContent = 'Email já cadastrado. Utilize o Login.';
+                    return;
+                }
+                let accountNumber;
+                let existingAccounts = Object.values(users).map(u => u.accountNumber);
+                do { accountNumber = generateAccountNumber(); } while (existingAccounts.includes(accountNumber));
+
+                users[email] = { password, name, sexo, accountNumber, createdAt: new Date() };
+                saveUsers(users);
+                setBalance(accountNumber, 1000.00); 
+
+                msgEl.className = 'message success';
+                msgEl.style.display = 'block';
+                msgEl.textContent = `Conta criada com sucesso! Seu Número de Conta é: ${accountNumber}. Volte para o Login.`;
+                
+                document.getElementById('register-name-input').value = '';
+                document.getElementById('register-email-input').value = '';
+                document.getElementById('register-password-input').value = '';
+                document.getElementById('register-sexo-select').value = '';
+                checkRegisterButtonState(); 
+            }
+            function login() {
+                const email = document.getElementById('email-input').value;
+                const password = document.getElementById('password-input').value;
+                const msgEl = document.getElementById('login-message');
+                msgEl.className = 'message error';
+                msgEl.style.display = 'block';
+                const users = getUsers();
+                if (users[email] && users[email].password === password) {
+                    const user = users[email];
+                    localStorage.setItem('authToken', `token_${Math.random().toString(36).substring(2, 15)}`);
+                    localStorage.setItem('authUserEmail', email);
+                    localStorage.setItem('authUserAccountNumber', user.accountNumber); 
+                    msgEl.className = 'message success';
+                    msgEl.textContent = 'Acesso liberado...';
+                    setTimeout(updateUI, 500); 
+                } else {
+                    msgEl.textContent = 'Email ou senha inválidos.';
+                }
+            }
+            function logout() {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('authUserEmail');
+                localStorage.removeItem('authUserAccountNumber');
+                updateUI();
+            }
+            function saque() {
+                const userAccount = localStorage.getItem('authUserAccountNumber');
+                const valor = parseFloat(document.getElementById('saque-valor-input').value);
+                const msgEl = document.getElementById('saque-message');
+                msgEl.className = 'message error';
+                msgEl.style.display = 'block';
+                if (!userAccount) { msgEl.textContent = 'Erro de sessão. Faça login novamente.'; return; }
+                if (isNaN(valor) || valor <= 0) { msgEl.textContent = 'Valor inválido. Insira um valor positivo.'; return; }
+                let currentBalance = getBalance(userAccount);
+                if (currentBalance >= valor) {
+                    currentBalance -= valor;
+                    setBalance(userAccount, currentBalance);
+                    msgEl.className = 'message success';
+                    msgEl.textContent = `Saque de R$ ${valor.toFixed(2).replace('.', ',')} realizado com sucesso.`;
+                    updateUI();
+                    document.getElementById('saque-valor-input').value = '';
+                } else {
+                    msgEl.textContent = 'Saldo insuficiente para esta operação.';
+                }
+            }
+            function transfer() {
+                const origemAccount = localStorage.getItem('authUserAccountNumber');
+                const destinoAccount = document.getElementById('transfer-destino-input').value;
+                const valor = parseFloat(document.getElementById('transfer-valor-input').value);
+                const msgEl = document.getElementById('transfer-message');
+                msgEl.className = 'message error';
+                msgEl.style.display = 'block';
+                if (isNaN(valor) || valor <= 0 || destinoAccount === '') { msgEl.textContent = 'Verifique valor e número da Conta de Destino.'; return; }
+                if (origemAccount === destinoAccount) { msgEl.textContent = 'Transferência para a própria conta não é permitida.'; return; }
+                const users = getUsers();
+                const accountExists = Object.values(users).some(user => user.accountNumber === destinoAccount);
+                if (!accountExists) { msgEl.textContent = `Conta de destino (${destinoAccount}) não encontrada no sistema.`; return; }
+                let currentBalance = getBalance(origemAccount);
+                if (currentBalance >= valor) {
+                    currentBalance -= valor;
+                    setBalance(origemAccount, currentBalance);
+                    let destinoBalance = getBalance(destinoAccount);
+                    destinoBalance += valor;
+                    setBalance(destinoAccount, destinoBalance);
+                    msgEl.className = 'message success';
+                    msgEl.textContent = `Transferência de R$ ${valor.toFixed(2).replace('.', ',')} para a conta ${destinoAccount} concluída.`;
+                    updateUI();
+                    document.getElementById('transfer-destino-input').value = '';
+                    document.getElementById('transfer-valor-input').value = '';
+                } else {
+                    msgEl.textContent = 'Saldo insuficiente para realizar a transferência.';
+                }
+            }
+            // Disponibiliza as funções globalmente
+            window.register = register;
+            window.login = login;
+            window.logout = logout;
+            window.saque = saque;
+            window.transfer = transfer;
+        })();
+        
+        function deposito() {
+            const userAccount = localStorage.getItem('authUserAccountNumber');
+            const valor = parseFloat(document.getElementById('deposito-valor-input').value);
+            const msgEl = document.getElementById('deposito-message');
+            msgEl.className = 'message error';
+            msgEl.style.display = 'block';
+
+            if (!userAccount) {
+                 msgEl.textContent = 'Erro de sessão. Faça login novamente.';
+                return;
+            }
+            
+            if (isNaN(valor) || valor <= 0) {
+                msgEl.textContent = 'Valor inválido. Insira um valor positivo.';
+                return;
+            }
+
+            let currentBalance = getBalance(userAccount);
+            currentBalance += valor;
+            setBalance(userAccount, currentBalance);
+
+            msgEl.className = 'message success';
+            msgEl.textContent = `Depósito de R$ ${valor.toFixed(2).replace('.', ',')} realizado com sucesso.`;
+            updateUI();
+            document.getElementById('deposito-valor-input').value = '';
+        }
+        
+        // --- Inicialização da Aplicação ---
+        
+        function initValidationListeners() {
+            
+            // Listeners do Login
+            document.getElementById('email-input').addEventListener('input', validateLoginFields);
+            document.getElementById('password-input').addEventListener('input', validateLoginFields);
+            
+            // Listeners do Cadastro (Habilita botão)
+            document.getElementById('register-name-input').addEventListener('input', checkRegisterButtonState);
+            document.getElementById('register-email-input').addEventListener('input', checkRegisterButtonState);
+            document.getElementById('register-password-input').addEventListener('input', checkRegisterButtonState);
+            document.getElementById('register-sexo-select').addEventListener('change', checkRegisterButtonState);
+            
+            // Listeners do Cadastro (Blur)
+            document.getElementById('register-name-input').addEventListener('blur', validateNameOnBlur);
+            document.getElementById('register-email-input').addEventListener('blur', validateEmailOnBlur);
+            document.getElementById('register-password-input').addEventListener('blur', validatePasswordOnBlur);
+            document.getElementById('register-sexo-select').addEventListener('blur', validateSexoOnBlur);
+        }
+
+        window.onload = () => {
+            initValidationListeners();
+            updateUI(); 
+        };
+    </script>
+</body>
+</html>
