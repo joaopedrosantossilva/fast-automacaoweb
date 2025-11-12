@@ -35,26 +35,15 @@ Usar um arquivo `.html` local em vez de um site hospedado nos dá 3 grandes vant
 
 ---
 
-## 🚀 Setup do Ambiente (Passo a Passo)
-
-Siga estes passos na raiz do projeto (na pasta onde este `README.md` está) para instalar tudo do zero.
-
-### 1. Inicialize o Projeto (O "RG")
-Este comando cria o arquivo `package.json`, que é essencial para "ancorar" o projeto e gerenciar as dependências.
-
-```bash
-npm init -y
-```
-
-### 2. Instale o Cypress
-Este comando instala o Cypress e o salva como uma dependência de desenvolvimento no seu package.json.
-```bash
-npm install cypress --save-dev
-```
-
 ## ▶️ Como Executar os Testes
 
-### 1. Modo Interativo (Recomendado para escrever testes)
+### 1. Instale as Dependências
+Este comando irá ler o package.json e baixar todas as dependências necessárias (como o Cypress) para a pasta node_modules.
+```bash
+npm install
+```
+
+### 2. Modo Interativo 
 Abre o "Test Runner", a interface gráfica onde você pode ver o teste rodando e depurá-lo.
 ```bash
 npx cypress open
@@ -63,20 +52,3 @@ npx cypress open
 - Na interface, escolha E2E Testing.
 - Escolha seu navegador.
 - Clique no arquivo de teste (ex: painel.cy.js) para executá-lo
-
-### 2. Modo Interativo (Recomendado para escrever testes)
-Roda os testes em terminal, sem interface gráfica. É como o seu robô de CI (Jenkins, GitHub Actions) vai rodar.
-
-Para facilitar, nós adicionamos "scripts" ao nosso package.json:
-
-Para rodar a suíte "Smoke" (testes rápidos):
-
-```Bash
-npm run suite:smoke
-```
-
-Para rodar a suíte "Regression" (testes completos):
-
-```Bash
-npm run suite:regression
-```
