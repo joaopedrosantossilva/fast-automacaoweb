@@ -1,0 +1,24 @@
+{
+  "name": "fast-automacaoweb",
+  "version": "1.0.0",
+  "description": "Este é o projeto base para o curso de automação de testes com Cypress. O objetivo é fornecer um ambiente de aplicação web controlado, robusto e 100% offline (`qa_bank.html`) para que possamos focar exclusivamente nos conceitos de automação.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/joaopedrosantossilva/fast-automacaoweb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/joaopedrosantossilva/fast-automacaoweb/issues"
+  },
+  "homepage": "https://github.com/joaopedrosantossilva/fast-automacaoweb#readme",
+  "devDependencies": {
+    "cypress": "^14.5.4"
+  }
+}
