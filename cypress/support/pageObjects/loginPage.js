@@ -4,14 +4,50 @@ class loginPage {
         cy.visit('qa_bank.html')
     }
 
+    get loginInput() {
+        return cy.get('[data-cy="input-login-email"]')
+    }
+
+    get passwordInput(){
+        return cy.get('[data-cy="input-login-password"]')
+    }
+
+    get entrarButton() {
+        return cy.get('[data-cy="btn-login"]')
+    }
+
+    get usuarioLogadoTxt() {
+        return cy.get('[data-cy="user-name-display"]')
+    }
+
+    get credenciaisInvalidasTxt(){
+        return cy.get('[data-cy="login-message"]')
+    }
+
+    preencherEmail(email){
+        this.loginInput.type(email)
+    }
+    
+    preencherPassword(password){
+        this.passwordInput.type(password)
+    }
+
+    clicarEmEntrar(){
+        this.entrarButton.click()
+    }
+
     realizarLogin(email,password){
-        cy.get('[data-cy="input-login-email"]').type(email)
-        cy.get('[data-cy="input-login-password"]').type(password)
-        cy.get('[data-cy="btn-login"]').click()
+        this.preencherEmail(email)
+        this.preencherPassword(password)
+        this.clicarEmEntrar()
     }
 
     validarNomeUsuarioLogado(nome){
-        cy.get('[data-cy="user-name-display"]').should('have.text', nome)
+        this.usuarioLogadoTxt.should('have.text', nome)
+    }
+
+    validarMsgCredenciaisInvalidas(){
+        this.credenciaisInvalidasTxt.should('have.text', 'Email ou senha inválidos.')
     }
 }
 
