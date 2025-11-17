@@ -730,9 +730,11 @@
                 saveUsers(users);
                 setBalance(accountNumber, 1000.00); 
 
-                msgEl.className = 'message success';
-                msgEl.style.display = 'block';
-                msgEl.textContent = `Conta criada com sucesso! Seu Número de Conta é: ${accountNumber}. Volte para o Login.`;
+                setTimeout(()=> {
+                    msgEl.className = 'message success';
+                    msgEl.style.display = 'block';
+                    msgEl.textContent = `Conta criada com sucesso! Seu Número de Conta é: ${accountNumber}. Volte para o Login.`;
+                },5000)
                 
                 getEl('input-register-name').value = '';
                 getEl('input-register-email').value = '';

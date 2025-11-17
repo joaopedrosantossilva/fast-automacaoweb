@@ -24,6 +24,10 @@ class LoginPage {
         return cy.get('[data-cy="login-message"]')
     }
 
+    get criarContaButton(){
+        return cy.get('[data-cy=btn-toggle-register]')
+    }
+
     preencherEmail(email){
         this.loginInput.type(email)
     }
@@ -48,6 +52,10 @@ class LoginPage {
 
     validarMsgCredenciaisInvalidas(){
         this.credenciaisInvalidasTxt.should('have.text', 'Email ou senha inválidos.')
+    }
+
+    clicarEmCriarNovaConta(){
+        this.criarContaButton.click()
     }
 }
 
