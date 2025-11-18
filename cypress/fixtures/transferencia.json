@@ -1,0 +1,18 @@
+{
+  "usuarioOrigem": {
+    "name": "Joao Origem",
+    "email": "joao.origem@qabank.com",
+    "password": "123",
+    "accountNumber": "111111",
+    "balance": 1000.00,
+    "sexo": "MASCULINO"
+  },
+  "usuarioDestino": {
+    "name": "Maria Destino",
+    "email": "maria.destino@qabank.com",
+    "password": "123",
+    "accountNumber": "222222",
+    "balance": 500.00,
+    "sexo": "FEMININO"
+  }
+}
