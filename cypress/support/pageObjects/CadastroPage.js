@@ -20,7 +20,7 @@ class CadastroPage{
         return cy.get('[data-cy="btn-register-submit"]')
     }
 
-    get contaCadastradaComSucessoMsg(){
+    get mensagemDeRetorno(){
         return cy.get('[data-cy="register-message"]', {timeout: 10000})
     }
 
@@ -45,7 +45,11 @@ class CadastroPage{
     }
 
     validarMensagemDeContaCriadaComSucesso(){
-        this.contaCadastradaComSucessoMsg.should('be.visible').and('contains.text', 'Conta criada com sucesso! Seu Número de Conta é:')
+        this.mensagemDeRetorno.should('be.visible').and('contains.text', 'Conta criada com sucesso! Seu Número de Conta é:')
+    }
+
+    validarMensagemDeContaJaCadastrada(){
+        this.mensagemDeRetorno.should('be.visible').and('contains.text', 'Email já cadastrado.')
     }
 
     realizarCadastro(nome, email, password, sexo){

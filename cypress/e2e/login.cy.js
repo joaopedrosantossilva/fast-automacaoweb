@@ -2,27 +2,30 @@ import loginPage from "../support/pageObjects/LoginPage";
 
 describe('Login', () => {
 
-  it('Com sucesso - Usuario Admin', () => {
+  beforeEach(()=> {
     //ARRANGE
     loginPage.visitar()
-
-    //ACT
-    loginPage.realizarLogin("admin@qabank.com","admin123")
-
-    //ASSERT
-    loginPage.validarNomeUsuarioLogado("Admin do Sistema")
-    
+    cy.fixture("usuarios").as("users")
   })
 
-    it('Com credenciais invalidas - Usuario Admin', () => {
-    //ARRANGE
-    loginPage.visitar()
+  it('Com sucesso - Usuario Admin', () => {
+    cy.get("@users").then((users) => {
+      //ACT
+      loginPage.realizarLogin(users.admin.email, users.admin.password)
 
-    //ACT
-    loginPage.realizarLogin("admin@qabank.com","admin12345")
+      //ASSERT
+      loginPage.validarNomeUsuarioLogado(users.admin.nome)
+    })
+  })
 
-    //ASSERT
-    loginPage.validarMsgCredenciaisInvalidas()
+  it('Com credenciais invalidas - Usuario Admin', () => {
+    cy.fixture("usuarios").then((response) => {
+      //ACT
+      loginPage.realizarLogin(response.admin.email,response.admin.password_errada)
 
+      //ASSERT
+      loginPage.validarMsgCredenciaisInvalidas()
+
+    })
   })  
 })

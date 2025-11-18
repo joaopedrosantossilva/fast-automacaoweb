@@ -3,15 +3,29 @@ import CadastroPage from "../support/pageObjects/CadastroPage";
 
 describe('Cadastro de novas contas', () => {
 
+   beforeEach(()=> {
+        //ARRANGE
+        loginPage.visitar()
+        loginPage.clicarEmCriarNovaConta()
+        cy.fixture('usuarios').as('users')
+   }) 
+
   it('Com sucesso', () => {
-    //ARRANGE
-    loginPage.visitar()
-    loginPage.clicarEmCriarNovaConta()
+    cy.get('@users').then((response) => {
+        //ACT
+        CadastroPage.realizarCadastro(response.novo_usuario.nome, response.novo_usuario.email, response.novo_usuario.password, response.novo_usuario.sexo)
 
-    //ACT
-    CadastroPage.realizarCadastro('Novo usuario', 'teste@ste.com', '123456', 'Masculino')
+        //ASSERT
+        CadastroPage.validarMensagemDeContaCriadaComSucesso()
+        })
+})
+  it('Usuario ja cadastrado', () => {
+    cy.get('@users').then((response) => {
+        //ACT
+        CadastroPage.realizarCadastro(response.admin.nome, response.admin.email, response.admin.password, response.admin.sexo)
 
-    //ASSERT
-    CadastroPage.validarMensagemDeContaCriadaComSucesso()
-
-  })})
+        //ASSERT
+        CadastroPage.validarMensagemDeContaJaCadastrada()
+        })
+})
+})
