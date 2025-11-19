@@ -7,7 +7,7 @@ describe('Saque', () => {
     beforeEach(() => {
         cy.loginAdminViaStorage()
         loginPage.visitar()
-        painelPage.abrirPaginaDeSaque()
+        painelPage.clicarEmSaque()
     })
 
     it('Com sucesso', () => {

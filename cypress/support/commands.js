@@ -33,7 +33,7 @@ Cypress.Commands.add('loginAdminViaStorage', () => {
     });
 });
 
-Cypress.Commands.add('seendUsuario', (usuario) => {
+Cypress.Commands.add('sendUsuario', (usuario) => {
     cy.window().then((win) => {
         const users = JSON.parse(win.localStorage.getItem('bancoTesteUsers')) || {};
         const balances = JSON.parse(win.localStorage.getItem('bancoTesteBalance')) || {};
